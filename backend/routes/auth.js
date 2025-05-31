@@ -38,7 +38,14 @@ router.post("/login", async (req, res) => {
       { expiresIn: "3d" }
     );
     const { password, ...info } = user._doc;
-    res.cookie("token", token).status(200).json(info);
+    
+    // Set cookie with proper options
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true, // Required for HTTPS
+      sameSite: 'none', // Required for cross-origin
+      maxAge: 3 * 24 * 60 * 60 * 1000 // 3 days
+    }).status(200).json(info);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -47,10 +54,11 @@ router.post("/login", async (req, res) => {
 //LOGOUT
 router.get("/logout", async (req, res) => {
   try {
-    res
-      .clearCookie("token", { sameSite: "none", secure: true })
-      .status(200)
-      .send("User logged out successfully!");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none"
+    }).status(200).send("User logged out successfully!");
   } catch (err) {
     res.status(500).json(err);
   }
