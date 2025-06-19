@@ -58,6 +58,13 @@ app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/comments", commentRoute);
 
+// ✅ Health Check Route
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK"
+  });
+});
+
 // Image Upload
 const storage = multer.diskStorage({
   destination: (req, file, fn) => {
